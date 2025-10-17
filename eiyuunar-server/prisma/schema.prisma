@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  username String @unique
+  password String
+
+  profile Profile?
+}
+
+model Profile {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  tag  String
+  name String
+
+  characters Character[]
+
+  user   User   @relation(fields: [userID], references: [id])
+  userID String @unique @db.ObjectId
+}
+
+model Character {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String
+  alias String
+
+  health  Int
+  mana    Int
+  wayre   Int
+  speed   Int
+  actions Int
+  skills  Skill[] @relation(fields: [skillIDs], references: [id])
+
+  stat  StatBlock @relation(fields: [statID], references: [id])
+  owner Profile   @relation(fields: [ownerID], references: [id])
+
+  ownerID  String   @db.ObjectId
+  statID   String   @db.ObjectId
+  skillIDs String[] @db.ObjectId
+}
+
+model StatBlock {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  vitality     Int
+  constitution Int
+  speed        Int
+  reaction     Int
+  academics    Int
+  wisdom       Int
+
+  character Character[]
+}
+
+model Martial {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  experience Int
+}
+
+model Magic {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  experience Int
+}
+
+model Skill {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  type        SkillType
+
+  effect    Effect[] @relation(fields: [effectIDs], references: [id])
+  effectIDs String[] @db.ObjectId
+
+  characters   Character[] @relation(fields: [characterIDs], references: [id])
+  characterIDs String[]    @db.ObjectId
+}
+
+model Effect {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  duration    Int?
+
+  skill    Skill[]  @relation(fields: [skillIDs], references: [id])
+  skillIDs String[] @db.ObjectId
+
+  components EffectComponent[]
+}
+
+model EffectComponent {
+  id       String         @id @default(auto()) @map("_id") @db.ObjectId
+  effect   Effect         @relation(fields: [effectID], references: [id])
+  effectID String         @db.ObjectId
+  stat     String
+  value    Int
+  modifier EffectModifier
+}
+
+enum EffectModifier {
+  ABSOLUTE
+  PERCENTAGE
+  MULTIPLIER
+}
+
+enum SkillType {
+  MAGICAL
+  MARTIAL
+}

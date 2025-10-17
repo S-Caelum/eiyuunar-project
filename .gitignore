@@ -1,0 +1,41 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# App part
+./eiyuunar-app/node_modules
+./eiyuunar-app/.env
+./eiyuunar-app/dist
+./eiyuunar-app/logs
+./eiyuunar-app/*.log
+./eiyuunar-app/*.local
+
+# Server part
+./eiyuunar-server/node_modules
+./eiyuunar-server/build/
+./eiyuunar-server/dist
+./eiyuunar-server/.env
+./eiyuunar-server/logs
+./eiyuunar-server/*.log
+./eiyuunar-server/*.local
