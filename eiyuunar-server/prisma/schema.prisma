@@ -38,19 +38,31 @@ model Character {
   name  String
   alias String
 
-  health  Int
-  mana    Int
-  wayre   Int
-  speed   Int
-  actions Int
-  skills  Skill[] @relation(fields: [skillIDs], references: [id])
+  health       Int
+  mana         Int
+  wayre        Int
+  speed        Int
+  actionsCount Int
 
-  stat  StatBlock @relation(fields: [statID], references: [id])
-  owner Profile   @relation(fields: [ownerID], references: [id])
+  martial   Martial @relation(fields: [martialID], references: [id])
+  martialID String  @db.ObjectId
+  magic     Magic   @relation(fields: [magicID], references: [id])
+  magicID   String  @db.ObjectId
 
-  ownerID  String   @db.ObjectId
-  statID   String   @db.ObjectId
+  skills   Skill[]  @relation(fields: [skillIDs], references: [id])
   skillIDs String[] @db.ObjectId
+
+  stat   StatBlock @relation(fields: [statID], references: [id])
+  statID String    @db.ObjectId
+
+  owner   Profile @relation(fields: [ownerID], references: [id])
+  ownerID String  @db.ObjectId
+
+  inventory   Inventory @relation(fields: [inventoryID], references: [id])
+  inventoryID String    @db.ObjectId
+
+  equipment   Equipment @relation(fields: [equipmentID], references: [id])
+  equipmentID String    @db.ObjectId
 }
 
 model StatBlock {
@@ -69,12 +81,16 @@ model Martial {
   id         String @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   experience Int
+
+  characters Character[]
 }
 
 model Magic {
   id         String @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   experience Int
+
+  characters Character[]
 }
 
 model Skill {
@@ -82,6 +98,7 @@ model Skill {
   name        String
   description String
   type        SkillType
+  cost        Int
 
   effect    Effect[] @relation(fields: [effectIDs], references: [id])
   effectIDs String[] @db.ObjectId
@@ -99,16 +116,96 @@ model Effect {
   skill    Skill[]  @relation(fields: [skillIDs], references: [id])
   skillIDs String[] @db.ObjectId
 
-  components EffectComponent[]
+  components   EffectComponent[] @relation(fields: [componentIDs], references: [id])
+  componentIDs String[]          @db.ObjectId
+
+  weapons       Weapon[]     @relation(fields: [weaponIDs], references: [id])
+  weaponIDs     String[]     @db.ObjectId
+  armors        Armor[]      @relation(fields: [armorIDs], references: [id])
+  armorIDs      String[]     @db.ObjectId
+  consumables   Consumable[] @relation(fields: [consumableIDs], references: [id])
+  consumableIDs String[]     @db.ObjectId
 }
 
 model EffectComponent {
   id       String         @id @default(auto()) @map("_id") @db.ObjectId
-  effect   Effect         @relation(fields: [effectID], references: [id])
-  effectID String         @db.ObjectId
-  stat     String
+  target   String
   value    Int
   modifier EffectModifier
+
+  effects   Effect[] @relation(fields: [effectIDs], references: [id])
+  effectIDs String[] @db.ObjectId
+}
+
+model Inventory {
+  id     String          @id @default(auto()) @map("_id") @db.ObjectId
+  owners Character[]
+  items  InventoryItem[]
+}
+
+model InventoryItem {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  inventoryId String    @db.ObjectId
+  item        Item      @relation(fields: [itemId], references: [id])
+  itemId      String    @db.ObjectId
+  count       Int
+}
+
+model Equipment {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  item Item[]
+
+  character Character[]
+}
+
+model Item {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  item_type     ItemType
+  description   String
+  weight        Float
+  general_price Int
+
+  armor      Armor?
+  weapon     Weapon?
+  consumable Consumable?
+
+  inventories InventoryItem[]
+  Equipment   Equipment?      @relation(fields: [equipmentId], references: [id])
+  equipmentId String?         @db.ObjectId
+}
+
+model Armor {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  bodyPart   BodyPart
+  durability Int
+  effects    Effect[] @relation(fields: [effectIDs], references: [id])
+  effectIDs  String[] @db.ObjectId
+  item       Item     @relation(fields: [itemId], references: [id])
+  itemId     String   @unique @db.ObjectId
+}
+
+model Weapon {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  type       WeaponType
+  durability Int
+
+  baseDamage      Int?
+  falloffDistance Float?
+
+  effects   Effect[] @relation(fields: [effectIDs], references: [id])
+  effectIDs String[] @db.ObjectId
+  item      Item     @relation(fields: [itemId], references: [id])
+  itemId    String   @unique @db.ObjectId
+}
+
+model Consumable {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  effects   Effect[] @relation(fields: [effectIDs], references: [id])
+  effectIDs String[] @db.ObjectId
+  item      Item     @relation(fields: [itemId], references: [id])
+  itemId    String   @unique @db.ObjectId
 }
 
 enum EffectModifier {
@@ -117,7 +214,38 @@ enum EffectModifier {
   MULTIPLIER
 }
 
+enum ActionType {
+  USE_ATTACK
+  USE_SKILL
+  USE_ITEM
+}
+
 enum SkillType {
   MAGICAL
   MARTIAL
+}
+
+enum ItemType {
+  WEAPON
+  ARMOR
+  CONSUMABLE
+  OTHER
+}
+
+enum WeaponType {
+  MELEE
+  RANGED_STANDART
+  RANGED_GUN
+  CATALYST
+}
+
+enum BodyPart {
+  HEAD
+  CHEST
+  LHAND
+  RHAND
+  STOMACH
+  LLEG
+  RLEG
+  SIGNET
 }
