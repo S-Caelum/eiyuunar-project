@@ -4,6 +4,7 @@ import "./index.css";
 import NotFound from "./pages/404.tsx";
 import ServiceLayout from "./components/layouts/service-layout.tsx";
 import MainLayout from "./components/layouts/main-layout.tsx";
+import Character from "./pages/character.tsx";
 
 export default function RouterConfig() {
   return (
@@ -13,7 +14,7 @@ export default function RouterConfig() {
       </Route>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Root />} />
-        <Route path="/character" />
+        <Route path="/character" element={<Character />} />
       </Route>
     </Routes>
   );
