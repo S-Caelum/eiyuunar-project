@@ -13,6 +13,7 @@ export default function RouterConfig() {
       </Route>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Root />} />
+        <Route path="/character" />
       </Route>
     </Routes>
   );

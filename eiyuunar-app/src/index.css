@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+  --bg-color: #0d0d0d;
+  --mid-color: #131313;
+  --terminus: #eb0000;
+}
+
 @font-face {
   font-family: PlexMono;
   src: url("../public/fonts/IBMPlexMono-Medium.ttf");
@@ -11,7 +17,9 @@
 }
 
 :root {
-  --bg-color: #09080d;
+  --bg-color: #0d0d0d;
+  --mid-color: #141414;
+
   --terminus-color: #eb0000;
 
   color-scheme: dark;
@@ -35,21 +43,23 @@
 }
 
 body {
-  margin: 0;
-  padding: 0;
+  margin: 0px;
+  padding: 0px;
   display: flex;
   min-height: 100vh;
 }
 
 .screen-scroll-container {
   overflow-y: scroll;
-  height: calc(100vh-3.5%);
+  height: 100vh;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
 
 .screen-scroll-element {
-  height: calc(100vh-3.5%);
-  scroll-snap-align: center;
+  scroll-snap-align: start;
+  height: 100vh;
+  padding: 56px 64px;
+  margin: 0;
 }
