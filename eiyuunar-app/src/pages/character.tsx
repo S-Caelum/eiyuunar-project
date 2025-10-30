@@ -1,34 +1,13 @@
 import ResourceCounter from "../components/character/resource-counter";
 import Health from "../../public/icons/hp.svg";
 import Mana from "../../public/icons/mp.svg";
-import StatCounter, { type Stat } from "../components/character/stat-counter";
 
-type Character = {
-  name: string;
-  alias: string;
-  maxHp: number;
-  currentHp: number;
-  maxMp: number;
-  currentMp: number;
+import CombinedStatCounter from "../components/character/combined-stat-counter";
+import type { CombinedStatCounterType } from "../components/character/combined-stat-counter";
 
-  endurance: number;
-  constitution: number;
-
-  speed: number;
-  reaction: number;
-
-  academics: number;
-  wisdom: number;
-};
-
-const lStat: Stat = {
-  name: "Выносливость",
-  value: 2,
-};
-
-const rightStat: Stat = {
-  name: "Телосложение",
-  value: 2,
+const shit: CombinedStatCounterType = {
+  leftStat: { name: "Телосложение", value: 2 },
+  rightStat: { name: "Выносливость", value: 2 },
 };
 
 export default function Character() {
@@ -54,8 +33,11 @@ export default function Character() {
           </div>
         </section>
         <div className="grow rounded-md gap-4 flex">
-          <section className="w-1/4 p-4 border rounded-md">
-            <StatCounter leftStat={lStat} rightStat={rightStat} />
+          <section className="w-1/4 p-4 border flex flex-col gap-8 rounded-md">
+            <CombinedStatCounter
+              leftStat={shit.leftStat}
+              rightStat={shit.rightStat}
+            />
           </section>
           <section className="w-1/4 border rounded-md"></section>
           <section className="grow border rounded-md"></section>
