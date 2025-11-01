@@ -7,7 +7,10 @@ export type CounterType = {
 const StatCounter = ({ name, value, ref }: CounterType) => {
   return (
     <div className="w-full h-fit flex justify-between gap-8 text-md">
-      <section ref={ref} className="border flex flex-row gap-3 grow px-4 py-4">
+      <section
+        ref={ref}
+        className="border flex flex-row gap-3 grow px-3.5 py-2.5 rounded-sm leading-6"
+      >
         <p>{name}</p>
         <hr className="grow self-center border rounded-4xl" />
         <p>{value}</p>

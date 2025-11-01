@@ -3,16 +3,20 @@ const ResourceCounter = ({
   className,
   value,
 }: {
-  icon: string;
+  icon: string | undefined;
   className: string;
-  value: number;
+  value: number | undefined;
 }) => {
   return (
     <div className={className}>
-      <img className="py-1" src={icon} />
-      <p className="">
-        {value}/{value}
-      </p>
+      {typeof icon !== "undefined" ? <img alt="RS:" src={icon} /> : <>RS:</>}
+      {typeof value !== "undefined" ? (
+        <p className="font-light w-full">
+          {value}/{value}
+        </p>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

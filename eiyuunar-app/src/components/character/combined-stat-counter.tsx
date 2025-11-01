@@ -11,68 +11,84 @@ const CombinedStatCounter = ({
   leftStat,
   rightStat,
 }: CombinedStatCounterType) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const lStatRef = useRef<HTMLDivElement>(null);
   const rStatRef = useRef<HTMLDivElement>(null);
   const sumStatRef = useRef<HTMLDivElement>(null);
-  const distanceRef = useRef<HTMLDivElement>(null);
 
-  const [data, setData] = useState({
-    x1: 0,
-    x2: 0,
-    x3: 0,
-    y1: 0,
-    y2: 0,
-    y3: 0,
-    distance: 0,
-  });
+  const [lines, setLines] = useState<Array<{
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  }> | null>(null);
 
   useEffect(() => {
-    const updatePath = () => {
+    const updateLines = () => {
       if (
-        lStatRef.current &&
-        rStatRef.current &&
-        sumStatRef.current &&
-        distanceRef.current
+        !containerRef.current ||
+        !lStatRef.current ||
+        !rStatRef.current ||
+        !sumStatRef.current
       ) {
-        const rect1 = lStatRef.current.getBoundingClientRect();
-        const rect2 = rStatRef.current.getBoundingClientRect();
-        const rect3 = sumStatRef.current.getBoundingClientRect();
-        const distanceRect = distanceRef.current?.getBoundingClientRect();
-
-        // Calculate center points (adjust as needed for specific connection points)
-        const x1 = rect1.right;
-        const y1 = rect1.top + rect1.height / 2;
-
-        const x2 = rect2.right;
-        const y2 = rect2.top + rect2.height / 2;
-
-        const x3 = rect3.left;
-        const y3 = rect3.top + rect3.height / 2;
-
-        const distance = (x3 + distanceRect.right) / 2;
-
-        setData({
-          x1: x1,
-          x2: x2,
-          x3: x3,
-          y1: y1,
-          y2: y2,
-          y3: y3,
-          distance: distance,
-        });
+        return;
       }
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const lRect = lStatRef.current.getBoundingClientRect();
+      const rRect = rStatRef.current.getBoundingClientRect();
+      const sumRect = sumStatRef.current.getBoundingClientRect();
+
+      // Пересчитываем координаты относительно контейнера
+      const lCenterX = lRect.left - containerRect.left + lRect.width;
+      const lCenterY = lRect.top - containerRect.top + lRect.height / 2;
+
+      const rCenterX = rRect.left - containerRect.left + rRect.width;
+      const rCenterY = rRect.top - containerRect.top + rRect.height / 2;
+
+      const sumCenterX = sumRect.left - containerRect.left;
+      const sumCenterY = sumRect.top - containerRect.top + sumRect.height / 2;
+
+      // Средняя точка для соединения
+      const midX = (Math.max(lCenterX, rCenterX) + sumCenterX) / 2;
+
+      // Создаем линии для древовидной структуры
+      const newLines = [
+        // От левого счетчика до средней вертикали
+        { x1: lCenterX, y1: lCenterY, x2: midX, y2: lCenterY },
+        // От правого счетчика до средней вертикали
+        { x1: rCenterX, y1: rCenterY, x2: midX, y2: rCenterY },
+        // Вертикальная соединительная линия
+        { x1: midX, y1: lCenterY, x2: midX, y2: rCenterY },
+        // От средней точки до суммарного счетчика
+        { x1: midX, y1: sumCenterY, x2: sumCenterX, y2: sumCenterY },
+      ];
+
+      setLines(newLines);
     };
-    updatePath(); // Initial path drawing
-    window.addEventListener("resize", updatePath); // Update on resize
+
+    // Задержка для гарантии отрисовки DOM
+    const timeoutId = setTimeout(updateLines, 0);
+
+    const observer = new ResizeObserver(updateLines);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    window.addEventListener("resize", updateLines);
 
     return () => {
-      window.removeEventListener("resize", updatePath); // Cleanup
+      clearTimeout(timeoutId);
+      observer.disconnect();
+      window.removeEventListener("resize", updateLines);
     };
-  }, []);
-
+  }, [leftStat.value, rightStat.value]); // Обновляем при изменении значений
   return (
-    <div className="w-full h-fit flex justify-between items-center gap-8">
-      <section ref={distanceRef} className="w-9/12 flex flex-col gap-3">
+    <div
+      ref={containerRef}
+      className="w-full h-fit flex justify-between items-center gap-4 relative"
+    >
+      <section className="w-9/12 flex flex-col gap-3">
         <StatCounter
           name={leftStat.name}
           value={leftStat.value}
@@ -84,61 +100,37 @@ const CombinedStatCounter = ({
           ref={rStatRef}
         />
       </section>
-      <section className="h-20 w-20">
+      <section className="h-16 w-16">
         <div
           ref={sumStatRef}
-          className="border w-full text-2xl leading-19 text-center rounded-sm h-full"
+          className="border w-full text-xl leading-16 text-center rounded-sm h-full"
         >
           <p className="w-full h-full">{leftStat.value + rightStat.value}</p>
         </div>
       </section>
-      <svg
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          pointerEvents: "none",
-        }}
-      >
-        <line
-          x1={data.x1}
-          x2={data.distance}
-          y1={data.y1}
-          y2={data.y1}
-          stroke="white"
-          strokeWidth={1}
-          fill="none"
-        />
-        <line
-          x1={data.x2}
-          x2={data.distance}
-          y1={data.y2}
-          y2={data.y2}
-          stroke="white"
-          strokeWidth={1}
-          fill="none"
-        />
-        <line
-          x1={data.distance}
-          x2={data.distance}
-          y1={data.y1}
-          y2={data.y2}
-          stroke="white"
-          strokeWidth={1}
-          fill="none"
-        />
-        <line
-          x1={data.distance}
-          x2={data.x3}
-          y1={data.y3}
-          y2={data.y3}
-          stroke="white"
-          strokeWidth={1}
-          fill="none"
-        />
-      </svg>
+      {/* SVG с линиями - теперь относительно контейнера */}
+      {lines && (
+        <svg
+          className="absolute top-0 left-0 w-full h-full pointer-events-none"
+          style={{ zIndex: 0 }}
+        >
+          {lines.map((line, index) => (
+            <line
+              strokeDasharray={100}
+              strokeDashoffset={100}
+              className="animate-draw"
+              key={index}
+              x1={line.x1}
+              y1={line.y1}
+              x2={line.x2}
+              y2={line.y2}
+              stroke="white"
+              strokeWidth={1}
+              fill="none"
+            />
+          ))}
+        </svg>
+      )}
     </div>
   );
 };
