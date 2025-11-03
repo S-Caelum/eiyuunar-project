@@ -1,10 +1,14 @@
+import useCharacter from "../../stores/character-store";
+
 export type CounterType = {
   name: string;
   value: number;
+  modifiable: boolean;
   ref?: React.RefObject<HTMLDivElement | null>;
 };
 
-const StatCounter = ({ name, value, ref }: CounterType) => {
+const StatCounter = ({ name, value, ref, modifiable }: CounterType) => {
+  const mode = useCharacter((state) => state.modifiable);
   return (
     <div className="w-full h-fit flex justify-between gap-8 text-md">
       <section
@@ -13,7 +17,12 @@ const StatCounter = ({ name, value, ref }: CounterType) => {
       >
         <p>{name}</p>
         <hr className="grow self-center border rounded-4xl" />
-        <p>{value}</p>
+        <input
+          type="number"
+          value={value}
+          className={`w-8 text-center focus:outline-0 ${mode === true && modifiable === true ? "shadow-[0_1px_0_white]" : "shadow-none"} transition-all`}
+          disabled={mode === true && modifiable === true ? false : true}
+        />
       </section>
     </div>
   );

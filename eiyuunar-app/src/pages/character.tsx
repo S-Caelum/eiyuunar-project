@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { CombinedStatCounterType } from "../components/character/combined-stat-counter";
 import ResourceCounter from "../components/character/resource-counter";
@@ -7,13 +7,18 @@ import Parameter from "../components/character/parameter";
 import StatCounter from "../components/character/stat-counter";
 import CharacterAbout from "../components/character/about";
 import CharacterAbilities from "../components/character/abilities";
+import CharacterNotes from "../components/character/notes";
 
-const shit: CombinedStatCounterType = {
-  leftStat: { name: "Телосложение", value: 2 },
-  rightStat: { name: "Выносливость", value: 2 },
-};
+import useCharacter from "../stores/character-store";
 
 export default function Character() {
+  const setModifiable = useCharacter((state) => state.switchMode);
+
+  const shit: CombinedStatCounterType = {
+    leftStat: { name: "Телосложение", value: 4, modifiable: true },
+    rightStat: { name: "Телосложение", value: 4, modifiable: true },
+  };
+
   const [activeTab, setActiveTab] = useState<number>(0);
   const tabs = [
     "Персонаж",
@@ -22,7 +27,11 @@ export default function Character() {
     "Инвентарь",
     "Заметки",
   ];
-  const tabContent = [<CharacterAbout />, <CharacterAbilities />];
+  const tabContent = [
+    <CharacterAbout />,
+    <CharacterAbilities />,
+    <CharacterNotes />,
+  ];
   const changeTabHandler = (index: number) => {
     setActiveTab(index);
   };
@@ -68,6 +77,15 @@ export default function Character() {
             />
             <Parameter name="Движение" values={[{ icon: "", value: 3 }]} />
           </div>
+          <div className="w-fit flex items-center p-3 gap-4 h-full">
+            <button
+              className="w-14 h-14 border rounded-sm"
+              onClick={setModifiable}
+            >
+              SW
+            </button>
+            <button className="w-14 h-14 border rounded-sm"> D </button>
+          </div>
         </section>
         <div className="grow rounded-md flex flex-col 2xl:flex-row gap-4">
           <div className="h-full w-full 2xl:w-1/2 flex flex-row gap-4">
@@ -86,12 +104,12 @@ export default function Character() {
               />
             </section>
             <section className="w-1/2 flex flex-col border p-4 gap-3 rounded-md">
-              <StatCounter name="Харизма" value={3} />
-              <StatCounter name="Харизма" value={3} />
-              <StatCounter name="Харизма" value={3} />
-              <StatCounter name="Харизма" value={3} />
-              <StatCounter name="Харизма" value={3} />
-              <StatCounter name="Харизма" value={3} />
+              <StatCounter modifiable={false} name="Харизма" value={3} />
+              <StatCounter modifiable={false} name="Харизма" value={3} />
+              <StatCounter modifiable={false} name="Харизма" value={3} />
+              <StatCounter modifiable={false} name="Харизма" value={3} />
+              <StatCounter modifiable={false} name="Харизма" value={3} />
+              <StatCounter modifiable={false} name="Харизма" value={3} />
             </section>
           </div>
           <section className="w-full 2xl:w-1/2 grow flex p-4 flex-col border rounded-md">

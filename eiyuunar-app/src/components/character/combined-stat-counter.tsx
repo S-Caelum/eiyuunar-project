@@ -93,11 +93,13 @@ const CombinedStatCounter = ({
           name={leftStat.name}
           value={leftStat.value}
           ref={lStatRef}
+          modifiable={leftStat.modifiable}
         />
         <StatCounter
           name={rightStat.name}
           value={rightStat.value}
           ref={rStatRef}
+          modifiable={rightStat.modifiable}
         />
       </section>
       <section className="h-16 w-16">
