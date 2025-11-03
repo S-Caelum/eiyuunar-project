@@ -1,10 +1,12 @@
-import ResourceCounter from "../components/character/resource-counter";
-import Health from "../../public/icons/hp.svg";
-import Mana from "../../public/icons/mp.svg";
+import { useState } from "react";
 
-import CombinedStatCounter from "../components/character/combined-stat-counter";
 import type { CombinedStatCounterType } from "../components/character/combined-stat-counter";
+import ResourceCounter from "../components/character/resource-counter";
+import CombinedStatCounter from "../components/character/combined-stat-counter";
 import Parameter from "../components/character/parameter";
+import StatCounter from "../components/character/stat-counter";
+import CharacterAbout from "../components/character/about";
+import CharacterAbilities from "../components/character/abilities";
 
 const shit: CombinedStatCounterType = {
   leftStat: { name: "Телосложение", value: 2 },
@@ -12,6 +14,19 @@ const shit: CombinedStatCounterType = {
 };
 
 export default function Character() {
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const tabs = [
+    "Персонаж",
+    "Способности",
+    "Экипировка",
+    "Инвентарь",
+    "Заметки",
+  ];
+  const tabContent = [<CharacterAbout />, <CharacterAbilities />];
+  const changeTabHandler = (index: number) => {
+    setActiveTab(index);
+  };
+
   return (
     <div className="screen-scroll-container flex flex-col font-[PlexMono]">
       <div className="screen-scroll-element flex flex-col gap-4">
@@ -19,23 +34,39 @@ export default function Character() {
           <div className="w-20 h-20 bg-amber-50 rounded-sm"></div>
           <div className="grid grid-rows-2 h-full w-fit max-w-1/2">
             <p className="w-full text-xl leading-8">Nameless Hero</p>
-            <div className="flex gap-3.5 w-full">
+            <div className="flex gap-3 w-full">
               <ResourceCounter
+                icon=""
                 value={2800}
                 className="w-fit flex justify-center border px-3 leading-9 text-md gap-2 text-red-400 rounded-sm"
-              />{" "}
+              />
               <ResourceCounter
+                icon=""
                 value={2800}
                 className="w-fit flex justify-center border px-3 leading-9 text-md gap-2 text-teal-400 rounded-sm"
               />
+              <div className="w-10 h-10 flex justify-center items-center border rounded-sm text-purple-500">
+                W
+              </div>
             </div>
           </div>
-          <div className="w-fit gap-3.5 flex h-full ml-1">
-            <Parameter name="Защита" values={[{ value: 3 }, { value: 3 }]} />
-            <Parameter name="Защита" values={[{ value: 3 }, { value: 3 }]} />
-            <Parameter name="Защита" values={[{ value: 3 }, { value: 12 }]} />
-            <Parameter name="Защита" values={[{ value: 3 }, { value: 3 }]} />
-            <Parameter name="Защита" values={[{ value: 3 }, { value: 3 }]} />
+          <div className="grow gap-3.5 flex h-full ml-1">
+            <Parameter
+              name="Защита"
+              values={[
+                { icon: "", value: 3 },
+                { icon: "", value: 3 },
+                { icon: "", value: 3 },
+              ]}
+            />
+            <Parameter
+              name="Атака"
+              values={[
+                { icon: "", value: 3 },
+                { icon: "", value: 3 },
+              ]}
+            />
+            <Parameter name="Движение" values={[{ icon: "", value: 3 }]} />
           </div>
         </section>
         <div className="grow rounded-md flex flex-col 2xl:flex-row gap-4">
@@ -54,9 +85,33 @@ export default function Character() {
                 rightStat={shit.rightStat}
               />
             </section>
-            <section className="w-1/2 border rounded-md"></section>
+            <section className="w-1/2 flex flex-col border p-4 gap-3 rounded-md">
+              <StatCounter name="Харизма" value={3} />
+              <StatCounter name="Харизма" value={3} />
+              <StatCounter name="Харизма" value={3} />
+              <StatCounter name="Харизма" value={3} />
+              <StatCounter name="Харизма" value={3} />
+              <StatCounter name="Харизма" value={3} />
+            </section>
           </div>
-          <section className="w-full 2xl:w-1/2 border" />
+          <section className="w-full 2xl:w-1/2 grow flex p-4 flex-col border rounded-md">
+            <div className="w-full h-12 grid grid-cols-5 justify-items-center border border-b-0 rounded-t-sm grid-rows-1">
+              {tabs.map((label, id) => {
+                return (
+                  <button
+                    key={id}
+                    className={`w-full transition-all first:rounded-tl-sm last:rounded-tr-sm duration-150 p-2 ${activeTab === id ? "bg-blue-500" : "bg-transparent"}`}
+                    onClick={() => changeTabHandler(id)}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="grow flex flex-col border rounded-b-sm">
+              {tabContent[activeTab]}
+            </div>
+          </section>
         </div>
       </div>
     </div>
