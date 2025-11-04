@@ -38,7 +38,9 @@ model Character {
   name  String
   alias String
 
+  maxHealth    Int
   health       Int
+  maxMana      Int
   mana         Int
   wayre        Int
   speed        Int
@@ -111,7 +113,10 @@ model Effect {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
+
   duration    Int?
+  maxStacks   Int?
+  isStackable Boolean @default(false)
 
   skill    Skill[]  @relation(fields: [skillIDs], references: [id])
   skillIDs String[] @db.ObjectId

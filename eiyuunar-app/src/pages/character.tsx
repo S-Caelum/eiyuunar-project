@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import useCharacter from "../stores/character-store";
 
 import type { CombinedStatCounterType } from "../components/character/combined-stat-counter";
 import ResourceCounter from "../components/character/resource-counter";
@@ -8,18 +8,17 @@ import StatCounter from "../components/character/stat-counter";
 import CharacterAbout from "../components/character/about";
 import CharacterAbilities from "../components/character/abilities";
 import CharacterNotes from "../components/character/notes";
-
-import useCharacter from "../stores/character-store";
+import TabView from "../components/common/tab-view";
 
 export default function Character() {
   const setModifiable = useCharacter((state) => state.switchMode);
+  const modifiable = useCharacter((state) => state.modifiable);
 
   const shit: CombinedStatCounterType = {
     leftStat: { name: "Телосложение", value: 4, modifiable: true },
     rightStat: { name: "Телосложение", value: 4, modifiable: true },
   };
 
-  const [activeTab, setActiveTab] = useState<number>(0);
   const tabs = [
     "Персонаж",
     "Способности",
@@ -32,29 +31,29 @@ export default function Character() {
     <CharacterAbilities />,
     <CharacterNotes />,
   ];
-  const changeTabHandler = (index: number) => {
-    setActiveTab(index);
-  };
-
   return (
     <div className="screen-scroll-container flex flex-col font-[PlexMono]">
       <div className="screen-scroll-element flex flex-col gap-4">
         <section className="h-24 border rounded-md flex p-2 gap-3.5 items-center">
           <div className="w-20 h-20 bg-amber-50 rounded-sm"></div>
-          <div className="grid grid-rows-2 h-full w-fit max-w-1/2">
-            <p className="w-full text-xl leading-8">Nameless Hero</p>
+          <div className="grid grid-rows-2 gap-2 h-full w-fit max-w-1/2">
+            <input
+              className={`w-full text-xl h-full leading-8 focus:outline-none ${modifiable === true ? "shadow-[0_1px_0_white]" : "shadow-none"} duration-300 delay-100`}
+              value={"Nameless Hero"}
+              disabled={!modifiable}
+            />
             <div className="flex gap-3 w-full">
               <ResourceCounter
                 icon=""
                 value={2800}
-                className="w-fit flex justify-center border px-3 leading-9 text-md gap-2 text-red-400 rounded-sm"
+                className="w-fit flex justify-center border px-3 leading-8 text-md gap-2 text-red-400 rounded-sm"
               />
               <ResourceCounter
                 icon=""
                 value={2800}
-                className="w-fit flex justify-center border px-3 leading-9 text-md gap-2 text-teal-400 rounded-sm"
+                className="w-fit flex justify-center border px-3 leading-8 text-md gap-2 text-teal-400 rounded-sm"
               />
-              <div className="w-10 h-10 flex justify-center items-center border rounded-sm text-purple-500">
+              <div className="w-9 h-9 flex justify-center items-center border rounded-sm text-purple-500">
                 W
               </div>
             </div>
@@ -113,22 +112,7 @@ export default function Character() {
             </section>
           </div>
           <section className="w-full 2xl:w-1/2 grow flex p-4 flex-col border rounded-md">
-            <div className="w-full h-12 grid grid-cols-5 justify-items-center border border-b-0 rounded-t-sm grid-rows-1">
-              {tabs.map((label, id) => {
-                return (
-                  <button
-                    key={id}
-                    className={`w-full transition-all first:rounded-tl-sm last:rounded-tr-sm duration-150 p-2 ${activeTab === id ? "bg-blue-500" : "bg-transparent"}`}
-                    onClick={() => changeTabHandler(id)}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="grow flex flex-col border rounded-b-sm">
-              {tabContent[activeTab]}
-            </div>
+            <TabView tabs={tabs} tabsContents={tabContent} />
           </section>
         </div>
       </div>

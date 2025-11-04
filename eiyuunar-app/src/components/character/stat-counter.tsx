@@ -16,11 +16,11 @@ const StatCounter = ({ name, value, ref, modifiable }: CounterType) => {
         className="border flex flex-row gap-3 grow px-3.5 py-2.5 rounded-sm leading-6"
       >
         <p>{name}</p>
-        <hr className="grow self-center border rounded-4xl" />
+        <hr className="grow ml-3 self-center border rounded-4xl" />
         <input
           type="number"
           value={value}
-          className={`w-8 text-center focus:outline-0 ${mode === true && modifiable === true ? "shadow-[0_1px_0_white]" : "shadow-none"} transition-all`}
+          className={`w-8 text-center focus:outline-0 ${mode === true && modifiable === true ? "shadow-[0_1px_0_white]" : "shadow-none"} transition-all duration-300 delay-100`}
           disabled={mode === true && modifiable === true ? false : true}
         />
       </section>
