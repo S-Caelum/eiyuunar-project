@@ -34,9 +34,18 @@ model Profile {
 }
 
 model Character {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  name  String
-  alias String
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  alias       String
+  description String
+
+  gender   Gender @relation(fields: [genderID], references: [id])
+  genderID String @db.ObjectId
+
+  race   Race   @relation(fields: [raceID], references: [id])
+  raceID String @db.ObjectId
+
+  birthday DateTime
 
   maxHealth    Int
   health       Int
@@ -65,6 +74,23 @@ model Character {
 
   equipment   Equipment @relation(fields: [equipmentID], references: [id])
   equipmentID String    @db.ObjectId
+}
+
+model Gender {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  characters Character[]
+}
+
+model Race {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  icon        String?
+  effects     Effect[] @relation(fields: [effectIDs], references: [id])
+  effectIDs   String[] @db.ObjectId
+
+  Character Character[]
 }
 
 model StatBlock {
@@ -130,6 +156,8 @@ model Effect {
   armorIDs      String[]     @db.ObjectId
   consumables   Consumable[] @relation(fields: [consumableIDs], references: [id])
   consumableIDs String[]     @db.ObjectId
+  Race          Race[]       @relation(fields: [raceIDs], references: [id])
+  raceIDs       String[]     @db.ObjectId
 }
 
 model EffectComponent {
@@ -177,8 +205,8 @@ model Item {
   consumable Consumable?
 
   inventories InventoryItem[]
-  Equipment   Equipment?      @relation(fields: [equipmentId], references: [id])
-  equipmentId String?         @db.ObjectId
+  Equipment   Equipment?      @relation(fields: [equipmentID], references: [id])
+  equipmentID String?         @db.ObjectId
 }
 
 model Armor {
@@ -187,8 +215,8 @@ model Armor {
   durability Int
   effects    Effect[] @relation(fields: [effectIDs], references: [id])
   effectIDs  String[] @db.ObjectId
-  item       Item     @relation(fields: [itemId], references: [id])
-  itemId     String   @unique @db.ObjectId
+  item       Item     @relation(fields: [itemID], references: [id])
+  itemID     String   @unique @db.ObjectId
 }
 
 model Weapon {
@@ -201,16 +229,16 @@ model Weapon {
 
   effects   Effect[] @relation(fields: [effectIDs], references: [id])
   effectIDs String[] @db.ObjectId
-  item      Item     @relation(fields: [itemId], references: [id])
-  itemId    String   @unique @db.ObjectId
+  item      Item     @relation(fields: [itemID], references: [id])
+  itemID    String   @unique @db.ObjectId
 }
 
 model Consumable {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   effects   Effect[] @relation(fields: [effectIDs], references: [id])
   effectIDs String[] @db.ObjectId
-  item      Item     @relation(fields: [itemId], references: [id])
-  itemId    String   @unique @db.ObjectId
+  item      Item     @relation(fields: [itemID], references: [id])
+  itemID    String   @unique @db.ObjectId
 }
 
 enum EffectModifier {
