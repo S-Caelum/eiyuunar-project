@@ -9,16 +9,15 @@ type LabeledInputProps = {
 const LabeledInput = ({
   label,
   value,
-  placeholder,
   handler,
   className,
 }: LabeledInputProps) => {
   return (
     <div className={`${className}`}>
-      <p className="pb-1.5 text-sm">{label}</p>
+      <p className="pb-1 text-sm">{label}</p>
       <input
         type="text"
-        placeholder={placeholder}
+        placeholder="Nameless Hero"
         value={value}
         onChange={
           typeof handler !== "undefined"

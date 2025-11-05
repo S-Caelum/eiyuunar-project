@@ -45,7 +45,7 @@ model Character {
   race   Race   @relation(fields: [raceID], references: [id])
   raceID String @db.ObjectId
 
-  birthday DateTime
+  birthday String
 
   maxHealth    Int
   health       Int
