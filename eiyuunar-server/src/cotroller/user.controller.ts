@@ -1,3 +1,3 @@
-import type { Request, Response, NextFunction } from "express";
+import { PrismaClient } from "../generated/prisma";
 
 export async function name(req: Request, res: Response, next: NextFunction) {}
