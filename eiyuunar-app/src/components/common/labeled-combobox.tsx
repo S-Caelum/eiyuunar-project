@@ -16,7 +16,7 @@ type LabeledSelectProps = {
 
 const lol = ["Dasda", "dasdas", "dsadas", "gasgas"];
 
-const LabeledSelect = ({
+const LabeledComboBox = ({
   label,
   className,
   placeholder,
@@ -75,4 +75,4 @@ const LabeledSelect = ({
   );
 };
 
-export default LabeledSelect;
+export default LabeledComboBox;

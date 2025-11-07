@@ -1,4 +1,4 @@
-import useCharacter from "../stores/character-store";
+import useCharacterStore from "../stores/character-store";
 
 import type { CombinedStatCounterType } from "../components/character/combined-stat-counter";
 import ResourceCounter from "../components/character/resource-counter";
@@ -11,8 +11,8 @@ import CharacterNotes from "../components/character/notes";
 import TabView from "../components/common/tab-view";
 
 export default function Character() {
-  const setModifiable = useCharacter((state) => state.switchMode);
-  const modifiable = useCharacter((state) => state.modifiable);
+  const setModifiable = useCharacterStore((state) => state.switchMode);
+  const modifiable = useCharacterStore((state) => state.modifiable);
 
   const shit: CombinedStatCounterType = {
     leftStat: { name: "Телосложение", value: 4, modifiable: true },
