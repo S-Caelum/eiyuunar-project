@@ -90,7 +90,7 @@ model Race {
   effects     Effect[] @relation(fields: [effectIDs], references: [id])
   effectIDs   String[] @db.ObjectId
 
-  Character Character[]
+  character Character[]
 }
 
 model StatBlock {
@@ -156,15 +156,17 @@ model Effect {
   armorIDs      String[]     @db.ObjectId
   consumables   Consumable[] @relation(fields: [consumableIDs], references: [id])
   consumableIDs String[]     @db.ObjectId
-  Race          Race[]       @relation(fields: [raceIDs], references: [id])
+  race          Race[]       @relation(fields: [raceIDs], references: [id])
   raceIDs       String[]     @db.ObjectId
 }
 
 model EffectComponent {
-  id       String         @id @default(auto()) @map("_id") @db.ObjectId
-  target   String
-  value    Int
-  modifier EffectModifier
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  target      String
+  value       Int
+  modifier    EffectModifier
 
   effects   Effect[] @relation(fields: [effectIDs], references: [id])
   effectIDs String[] @db.ObjectId

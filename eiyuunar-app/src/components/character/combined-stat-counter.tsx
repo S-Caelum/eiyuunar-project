@@ -1,16 +1,18 @@
-import { useEffect, useRef, useState } from "react";
-import type { CounterType } from "./stat-counter";
-import StatCounter from "./stat-counter";
+import { useEffect, useRef, useState } from 'react';
 
-export type CombinedStatCounterType = {
-  leftStat: CounterType;
-  rightStat: CounterType;
+type Stat = {
+  text: string;
+  value: number;
+  handler: (e: number) => void;
 };
 
-const CombinedStatCounter = ({
-  leftStat,
-  rightStat,
-}: CombinedStatCounterType) => {
+type CombinedStatCounterProps = {
+  leftStat: Stat;
+  rightStat: Stat;
+  mode: 'VIEW' | 'EDIT';
+};
+
+const CombinedStatCounter = ({ leftStat, rightStat, mode }: CombinedStatCounterProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const lStatRef = useRef<HTMLDivElement>(null);
   const rStatRef = useRef<HTMLDivElement>(null);
@@ -25,15 +27,9 @@ const CombinedStatCounter = ({
 
   useEffect(() => {
     const updateLines = () => {
-      if (
-        !containerRef.current ||
-        !lStatRef.current ||
-        !rStatRef.current ||
-        !sumStatRef.current
-      ) {
+      if (!containerRef.current || !lStatRef.current || !rStatRef.current || !sumStatRef.current) {
         return;
       }
-
       const containerRect = containerRef.current.getBoundingClientRect();
       const lRect = lStatRef.current.getBoundingClientRect();
       const rRect = rStatRef.current.getBoundingClientRect();
@@ -63,7 +59,6 @@ const CombinedStatCounter = ({
         // От средней точки до суммарного счетчика
         { x1: midX, y1: sumCenterY, x2: sumCenterX, y2: sumCenterY },
       ];
-
       setLines(newLines);
     };
 
@@ -75,60 +70,90 @@ const CombinedStatCounter = ({
       observer.observe(containerRef.current);
     }
 
-    window.addEventListener("resize", updateLines);
+    window.addEventListener('resize', updateLines);
+
+    const safel = leftStat.value ?? 0;
+    const safer = rightStat.value ?? 0;
+    setSum(Number(safel) + Number(safer));
 
     return () => {
       clearTimeout(timeoutId);
       observer.disconnect();
-      window.removeEventListener("resize", updateLines);
+      window.removeEventListener('resize', updateLines);
     };
   }, [leftStat.value, rightStat.value]); // Обновляем при изменении значений
+
+  const [sum, setSum] = useState(leftStat.value + rightStat.value);
+  const changeHandler = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    handler: (val: number) => void,
+  ) => {
+    const v = e.target.value;
+    if (!isNaN(Number(v)) && typeof v !== 'undefined') {
+      handler(Number(v));
+    }
+  };
+
   return (
     <div
       ref={containerRef}
-      className="w-full h-fit flex justify-between items-center gap-4 relative"
-    >
-      <section className="w-9/12 flex flex-col gap-3">
-        <StatCounter
-          name={leftStat.name}
-          value={leftStat.value}
-          ref={lStatRef}
-          modifiable={leftStat.modifiable}
-        />
-        <StatCounter
-          name={rightStat.name}
-          value={rightStat.value}
-          ref={rStatRef}
-          modifiable={rightStat.modifiable}
-        />
+      className='w-full h-fit flex justify-between items-center gap-4 relative'>
+      <section className='w-9/12 flex flex-col gap-3'>
+        <div className='w-full h-fit flex flex-col justify-between gap-4 text-md'>
+          <section
+            ref={lStatRef}
+            className='border flex flex-row gap-3 grow pl-4 px-3.5 py-2.5 rounded-sm leading-6'>
+            <p>{leftStat.text}</p>
+            <hr className='grow ml-1 self-center border rounded-sm' />
+            <input
+              type='text'
+              value={leftStat.value}
+              onChange={(e) => changeHandler(e, leftStat.handler)}
+              className={`w-8 text-center focus:outline-0 ${mode === 'EDIT' ? 'shadow-[0_1px_0_white]' : 'shadow-none'} transition-all duration-300 delay-100`}
+              disabled={mode === 'EDIT' ? false : true}
+            />
+          </section>
+
+          <section
+            ref={rStatRef}
+            className='border flex flex-row gap-3 grow pl-4 px-3.5 py-2.5 rounded-sm leading-6'>
+            <p>{rightStat.text}</p>
+            <hr className='grow ml-1 self-center border rounded-sm' />
+            <input
+              type='text'
+              value={rightStat.value}
+              onChange={(e) => changeHandler(e, rightStat.handler)}
+              className={`w-8 text-center focus:outline-0 ${mode === 'EDIT' ? 'shadow-[0_1px_0_white]' : 'shadow-none'} transition-all duration-300 delay-100`}
+              disabled={mode === 'EDIT' ? false : true}
+            />
+          </section>
+        </div>
       </section>
-      <section className="h-16 w-16">
+      <section className='h-14 w-14'>
         <div
           ref={sumStatRef}
-          className="border w-full text-xl leading-16 text-center rounded-sm h-full"
-        >
-          <p className="w-full h-full">{leftStat.value + rightStat.value}</p>
+          className='border w-full text-xl leading-14 text-center rounded-sm h-full'>
+          <p className='w-full h-full'>{sum}</p>
         </div>
       </section>
       {/* SVG с линиями - теперь относительно контейнера */}
       {lines && (
         <svg
-          className="absolute top-0 left-0 w-full h-full pointer-events-none"
-          style={{ zIndex: 0 }}
-        >
+          className='absolute top-0 left-0 w-full h-full pointer-events-none'
+          style={{ zIndex: 0 }}>
           {lines.map((line, index) => (
             <line
               strokeDasharray={100}
               strokeDashoffset={100}
-              className="animate-draw"
+              className='animate-draw'
               key={index}
               x1={line.x1}
               y1={line.y1}
               x2={line.x2}
               y2={line.y2}
-              stroke="white"
+              stroke='white'
               strokeWidth={1}
-              fill="none"
+              fill='none'
             />
           ))}
         </svg>

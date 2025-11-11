@@ -1,57 +1,62 @@
-import LabeledInput from "../components/common/labeled-input";
-import LabeledComboBox from "../components/common/labeled-combobox";
-import { useNewCharacterStore } from "../stores/new-character-store";
+import type { JSX } from "react";
+import { useEffect, useState } from "react";
+import GeneralStep from "../components/new-character/general-step";
+import StatsStep from "../components/new-character/stats-step";
 
 export default function NewCharacter() {
-  const { name, alias, race, gender, birthday, description } =
-    useNewCharacterStore();
-  const changehandler = useNewCharacterStore((state) => state.changeParam);
+  const [activeStep, setActiveStep] = useState(0);
+  const [prevButton, setPrevButton] = useState("Сброс");
+  const [nextButton, setNextButton] = useState("Далее");
+  const creationSteps: Array<JSX.Element> = [<GeneralStep />, <StatsStep />];
+
+  useEffect(() => {
+    if (activeStep === 0) setPrevButton("Сброс");
+    if (activeStep > 0) setPrevButton("Назад");
+    if (activeStep + 1 === creationSteps.length) setNextButton("Создать");
+    else setNextButton("Далее");
+  }, [activeStep]);
+
+  const changeStepHandler = (index: number) => {
+    if (index > creationSteps.length) return;
+    if (index < 0) return;
+    else setActiveStep(index);
+  };
   return (
     <div className="screen-scroll-container justify-center items-center flex flex-col font-[PlexMono]">
-      <div className="w-3/6 h-5/6 border flex flex-col gap-6 rounded-md">
+      <div className="w-3/6 h-5/6 border flex flex-col gap-8 rounded-md">
         <h1 className="py-8 px-9 h-fit text-4xl border">NEW CHARACTER</h1>
-        <section className="flex flex-col grow px-8 pb-8 gap-6">
-          <div className="flex gap-8">
-            <LabeledInput
-              label="Имя персонажа"
-              value={name}
-              placeholder="Давид Градинарь"
-              className="grow"
-              handler={(value) => changehandler("name", value)}
-            />
-            <LabeledInput
-              label="Титул персонажа"
-              value={alias}
-              placeholder="Гроза фонарей"
-              className="grow"
-              handler={(value) => changehandler("alias", value)}
-            />
+        <section className="flex flex-col grow px-8 gap-6 transition-all">
+          {creationSteps[activeStep]}
+        </section>
+        <section className="w-full h-fit flex items-center px-8 pb-8 justify-between">
+          <button
+            className="w-1/3 h-12 border rounded-sm"
+            onClick={() => {
+              if (activeStep < 1) console.log("dasda");
+              else changeStepHandler(activeStep - 1);
+            }}
+          >
+            {prevButton}
+          </button>
+          <div className="w-1/3 flex gap-4 justify-center items-center h-12">
+            {creationSteps.map((zalypaEbanaya, id) => {
+              return (
+                <span
+                  key={id}
+                  className={`${zalypaEbanaya} w-3 h-3 rounded-full bg-neutral-500 ${id === activeStep ? "bg-white/80" : "bg-black"} transition-colors duration-200`}
+                />
+              );
+            })}
           </div>
-          <div className="flex gap-8">
-            <LabeledComboBox
-              label="Пол"
-              placeholder="Мужской"
-              className="grow"
-            />
-            <LabeledComboBox
-              label="Раcа"
-              placeholder="Чёрт ебаный"
-              className="grow"
-            />
-            <LabeledInput
-              label="Дата рождения"
-              value={birthday}
-              placeholder="В неурожайный год"
-              className="grow"
-            />
-          </div>
-          <div className="grow h-full flex flex-col">
-            <p className="pb-1 text-sm">Описание персонажа</p>
-            <textarea
-              className="grow h-full border placeholder:text-neutral-500 rounded-sm px-4 py-3 focus:outline-0"
-              placeholder="Наплачь своего говна от души"
-            />
-          </div>
+          <button
+            className="w-1/3 h-12 border rounded-sm"
+            onClick={() => {
+              if (activeStep + 1 < creationSteps.length)
+                changeStepHandler(activeStep + 1);
+            }}
+          >
+            {nextButton}
+          </button>
         </section>
       </div>
     </div>
