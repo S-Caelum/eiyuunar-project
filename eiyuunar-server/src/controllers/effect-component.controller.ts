@@ -51,14 +51,14 @@ export async function DeleteEffectComponent(req: Request, res: Response) {
 // Сюда не смотрим, это я для себя делаю чтоб потом быстро эффекты клепать | пишу спустя пару часов. ебать я даун ебаный там createMany метод есть
 export async function NewEffectComponentBulk(req: Request, res: Response) {
   const rows = [];
-  const name = "SPL MOD";
+  const name = "STLTH PROF";
   console.log(`CREATING FOLLOFWING INSTANCES OF ${name} EFFECT`);
   for (let i = 1; i < 2; i++) {
     const component = await prisma.effectComponent.create({
       data: {
-        name: `${name} up`,
-        value: i,
-        target: "SPELL MODIFIER",
+        name: `${name}`,
+        value: 0,
+        target: "SKILL MODIFIER",
         modifier: "ABSOLUTE",
       },
     });

@@ -83,14 +83,23 @@ model Gender {
 }
 
 model Race {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
-  icon        String?
-  effects     Effect[] @relation(fields: [effectIDs], references: [id])
-  effectIDs   String[] @db.ObjectId
+  origin      RaceOrigin[]
+  icon        String
+  effect      Effect?
 
   character Character[]
+}
+
+model RaceOrigin {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  effect      Effect?
+  race        Race    @relation(fields: [raceId], references: [id])
+  raceId      String  @db.ObjectId
 }
 
 model StatBlock {
@@ -103,6 +112,12 @@ model StatBlock {
   wisdom       Int
 
   character Character[]
+}
+
+model ComplexStat {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  formula String
 }
 
 model Martial {
@@ -156,8 +171,11 @@ model Effect {
   armorIDs      String[]     @db.ObjectId
   consumables   Consumable[] @relation(fields: [consumableIDs], references: [id])
   consumableIDs String[]     @db.ObjectId
-  race          Race[]       @relation(fields: [raceIDs], references: [id])
-  raceIDs       String[]     @db.ObjectId
+
+  race         Race?       @relation(fields: [raceID], references: [id])
+  raceID       String?     @unique @db.ObjectId
+  raceOrigin   RaceOrigin? @relation(fields: [raceOriginID], references: [id])
+  raceOriginID String?     @unique @db.ObjectId
 }
 
 model EffectComponent {

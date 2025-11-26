@@ -1,29 +1,62 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --bg-color: #0d0d0d;
+  --bg-color: #191721;
+  --bg-color2: linear-gradient(33deg, #0f0d13, #0e0e1a, #160924);
   --mid-color: #131313;
   --terminus: #eb0000;
+  --shadow-nav: 0px 0px 25px rgba(75, 15, 135, 0.65);
+  --menacing-text: linear-gradient(49deg, #241216, #0e0d19, #210e33);
+
+  --animate-entry: entry 3s ease-in-out;
+  @keyframes entry {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 100;
+    }
+  }
+
+  --animate-stroke: stroke 3s ease-in-out;
+  @keyframes stroke {
+    0% {
+      transform: scaleX(0);
+    }
+    100% {
+      transform: scaleX(1);
+    }
+  }
 }
 
 @font-face {
   font-family: PlexMono;
-  src: url("../public/fonts/IBMPlexMono-Medium.ttf");
+  src: url('../src/assets/fonts/IBMPlexMono-Medium.ttf');
+}
+
+@font-face {
+  font-family: Sigali;
+  src: url('../src/assets/fonts/Sigali-Script.ttf');
+}
+
+@font-face {
+  font-family: Pulsian;
+  src: url('../src/assets/fonts/pulsian.ttf');
 }
 
 @font-face {
   font-family: FleurDeLeah;
-  src: url("../public/fonts/FleurDeLeah-Regular.ttf");
+  src: url('../src/assets/fonts/FleurDeLeah-Regular.ttf');
 }
 
 :root {
-  --bg-color: #0d0d0d;
-  --mid-color: #141414;
+  --bg-color: linear-gradient(to bottom, #0f0d13, #0e0e1a, #160934);
+  --mid-color: #0f0d12;
 
   --terminus-color: #eb0000;
 
   color-scheme: dark;
-  background-color: var(--bg-color);
+  background: linear-gradient(49deg, #0f0d11, #0e0d19, #210e33);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -63,7 +96,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 
@@ -82,4 +115,22 @@ input[type="number"] {
 
 .animate-draw {
   animation: draw 1s ease-in-out forwards;
+}
+
+.stripes-main {
+  clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
+  background: repeating-linear-gradient(
+    65deg,
+    transparent,
+    rgba(14, 7, 20, 0) 15px,
+    rgba(14, 7, 20, 0.25) 10px,
+    transparent 30px
+  );
+  z-index: 1000;
+}
+
+.yo-wtf {
+  background: linear-gradient(-119deg, #141117, #141019, #21162b);
+  background-clip: text;
+  color: transparent;
 }

@@ -1,65 +1,42 @@
 import { create } from 'zustand';
+import type { BaseCharacter } from '../types/character';
 
-type Stat = {
-  constitution: number;
-  endurance: number;
-  speed: number;
-  reaction: number;
-  academics: number;
-  wisdom: number;
-};
+export type ObjectKeys<T> = {
+  [K in keyof T]: T[K] extends object ? K : never;
+}[keyof T];
 
-type NewCharacterStore = {
-  name: string;
-  alias: string;
-  description: string;
-  gender: string;
-  race: string;
-  birthday: string;
-
-  health: number;
-  mana: number;
-  wayre: number;
-  speed: number;
-  actionsCount: number;
-  martial: {
-    name: string;
-    experience: number;
-  };
-  magic: {
-    name: string;
-    experience: number;
-  };
-  stats: Stat;
+export interface NewCharacterStore extends BaseCharacter {
   changeParam: <K extends keyof NewCharacterStore>(key: K, v: NewCharacterStore[K]) => void;
-  changeNested: <K extends keyof NewCharacterStore, T extends keyof NewCharacterStore[K]>(
+  changeNested: <K extends ObjectKeys<NewCharacterStore>, T extends keyof NewCharacterStore[K]>(
     key: K,
     keyNested: T,
     v: NewCharacterStore[K][T],
   ) => void;
-};
+}
 
-export const useNewCharacterStore = create<NewCharacterStore>((set) => ({
+const initialState = {
   name: '',
   alias: '',
   description: '',
-  gender: '',
-  race: '',
+  gender: {
+    id: '-',
+    name: 'Мужской',
+  },
+  race: {
+    id: '-',
+    name: 'Человек',
+    description: '',
+    icon: '',
+    effects: '',
+  },
   birthday: '',
   health: 2800,
   mana: 100,
   wayre: 0,
   speed: 5,
-  actionsCount: 1,
-  martial: {
-    name: '',
-    experience: 0,
-  },
-  magic: {
-    name: '',
-    experience: 0,
-  },
+  actions: 1,
   stats: {
+    id: '-',
     constitution: 2,
     endurance: 2,
     speed: 2,
@@ -67,6 +44,11 @@ export const useNewCharacterStore = create<NewCharacterStore>((set) => ({
     academics: 2,
     wisdom: 2,
   },
+  owner: '',
+};
+
+export const useNewCharacterStore = create<NewCharacterStore>((set, get) => ({
+  ...initialState,
   changeParam: (key, value) =>
     set((state) => ({
       ...state,
@@ -74,12 +56,12 @@ export const useNewCharacterStore = create<NewCharacterStore>((set) => ({
     })),
   changeNested: (key, nested, value) =>
     set((state) => {
-      const cval = state[key];
-      if (typeof cval === 'object' && cval !== null) {
+      const currentValue = state[key];
+      if (typeof currentValue === 'object' && value !== null) {
         return {
           ...state,
           [key]: {
-            ...cval,
+            ...currentValue,
             [nested]: value,
           },
         };
